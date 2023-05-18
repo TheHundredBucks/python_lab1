@@ -27,9 +27,9 @@ TOTAL = SUM * ((1 + p) ** (SET_PERIOD / FIXED_PERIOD))
 """
 
 
-# TODO: add lines to calculate yields for some common periods
+# DONE: add lines to calculate yields for some common periods
 #       of time (e.g. 1 month, 1 year, 5 years, 10 years)
-# TODO: change the script to output the 1-year percent yield
+# DONE: change the script to output the 1-year percent yield
 #       as well
 # TODO: (extra) Output only percents if the initial SUM is
 #       not known at the moment the script is run
@@ -41,12 +41,19 @@ USAGE = """USAGE: {script} initial_sum percent fixed_period set_period
 """
 USAGE = USAGE.strip()
 
+def growth_calc(per, fixed_period, set_period):
+    return (1 + per) ** (set_period / fixed_period)
 
 def deposit(initial_sum, percent, fixed_period, set_period):
     """Calculate deposit yield."""
     per = percent / 100
-    growth = (1 + per) ** (set_period / fixed_period)
-    return initial_sum * growth
+    growths = [
+    growth_calc(per, fixed_period, set_period),
+    growth_calc(per, fixed_period, 1/12),
+    growth_calc(per, fixed_period, 1),
+    growth_calc(per, fixed_period, 5),
+    growth_calc(per, fixed_period, 10)]
+    return [initial_sum * growths[0], growths[1:]]
 
 
 def main(args):
@@ -63,9 +70,11 @@ def main(args):
     # ...
 
     res = deposit(initial_sum, percent, fixed_period, set_period)
-    print(res)
-
-
+    print('The total sum for', set_period, 'years is', res[0], end='')
+    res = deposit(initial_sum, percent, fixed_period, 1)
+    print(' which is', res[0], 'for one year')
+    print('Growths for 1m, 1y, 5y and 10y are', res[1])
+    
 if __name__ == '__main__':
     import sys
 

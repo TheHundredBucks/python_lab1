@@ -4,6 +4,8 @@
 
 See the sketch origins video first:
 https://www.youtube.com/watch?v=zLih-WQwBSc
+
+CHANGES: added a new forbidden word 'hate' with a slightly different output.
 """
 
 import random
@@ -14,6 +16,7 @@ MENU_MULTI = MENU + ['eggs', 'sausages']    # including plurals
 JOINTS = [', and ', ', ', ' and ', ' with ', ' and double portion of ']
 PREFERED = MENU[0]  # that's what promoted most
 FORBIDDEN = {'not', 'without', 'no'}
+FORBIDDEN_SPECIAL = {'hate'}
 
 SONG = ', '.join([PREFERED.capitalize()] + [PREFERED] * DEF_CHOICE) + '!'
 
@@ -23,6 +26,7 @@ D_CHOICE = '> '
 D_PROMOTE = "We highly recommend {dishes}" + f', and {PREFERED}...'
 D_GOOD = "That's a perfect choice. Let's have more {dishes}" + f', and {PREFERED}!'
 D_BAD = "Disgusting. Who eats {dishes}?"
+D_HATES = "Disgusting. Who {dishes}?"
 D_UNAVAILABLE = "That's not on our menu.\nWe have {dishes}."
 
 
@@ -37,10 +41,14 @@ def dialog(num_choice=DEF_CHOICE):
         print(D_PROMOTE.format(dishes=get_dishes(num_choice)))
     
     if set(words) & set(MENU_MULTI):
-        # user named something on the menu - do further check
+        # user named something on the menu - do further check   
         if set(words) & set(FORBIDDEN):
             # user asked not to put common dishes - blame
             print(D_BAD.format(dishes=entry))
+            promote()
+        elif set(words) & set(FORBIDDEN_SPECIAL):
+            # user hates common dishes - blame
+            print(D_HATES.format(dishes=entry))
             promote()
         else:
             # user asked for what's on menu - compliment
